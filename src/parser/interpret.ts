@@ -574,18 +574,17 @@ export function finalizeSkillGroups(groups: ReadonlyArray<{ category: string | n
     .filter((group) => group.items.length > 0);
 
   const result: Array<Draft<SkillGroup>> = [];
+  // Explicit categories and auto-grouped buckets share one namespace, so "Languages: Go" plus a flat list
+  // containing Python yields a single "Languages" group rather than two.
+  const addGroup = (category: string, items: string[]) => {
+    const existing = result.find((entry) => entry.category.toLowerCase() === category.toLowerCase());
+    if (existing) existing.items = uniqueBy([...existing.items, ...items], (item) => item.toLowerCase());
+    else result.push({ category, items, inferred: false });
+  };
   for (const group of cleaned) {
-    if (group.category) {
-      const existing = result.find((entry) => entry.category.toLowerCase() === group.category?.toLowerCase());
-      if (existing) existing.items = uniqueBy([...existing.items, ...group.items], (item) => item.toLowerCase());
-      else result.push({ category: group.category, items: group.items, inferred: false });
-      continue;
-    }
-    if (group.items.length >= 6) {
-      for (const bucket of groupByCategory(group.items)) result.push({ category: bucket.category, items: bucket.items, inferred: false });
-    } else {
-      result.push({ category: "Core Stack", items: group.items, inferred: false });
-    }
+    if (group.category) addGroup(group.category, group.items);
+    else if (group.items.length >= 6) for (const bucket of groupByCategory(group.items)) addGroup(bucket.category, bucket.items);
+    else addGroup("Core Stack", group.items);
   }
   return result;
 }

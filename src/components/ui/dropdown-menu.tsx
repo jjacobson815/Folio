@@ -1,5 +1,6 @@
 "use client";
 
+import { Check } from "lucide-react";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,29 @@ export function DropdownMenuItem({ className, ...props }: ComponentProps<typeof 
       )}
       {...props}
     />
+  );
+}
+
+export const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
+
+export function DropdownMenuRadioItem({ className, children, ...props }: ComponentProps<typeof DropdownMenuPrimitive.RadioItem>) {
+  return (
+    <DropdownMenuPrimitive.RadioItem
+      data-slot="dropdown-menu-radio-item"
+      className={cn(
+        "relative flex cursor-default select-none items-center gap-2.5 rounded-md py-1.5 pr-2 pl-8 text-sm outline-none",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50",
+        className,
+      )}
+      {...props}
+    >
+      <span className="absolute left-2 flex size-4 items-center justify-center">
+        <DropdownMenuPrimitive.ItemIndicator>
+          <Check aria-hidden="true" className="size-4 text-brand" />
+        </DropdownMenuPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </DropdownMenuPrimitive.RadioItem>
   );
 }
 

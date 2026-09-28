@@ -1,11 +1,14 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useSyncExternalStore } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { parseResume, type ParseResult } from "@/parser";
 import { usePortfolioStore } from "./portfolio-store";
+import { bootWorkspace } from "./workspace";
 
 export interface ResumeDocument {
   result: ParseResult;
+  /** The source text `result` was parsed from (lags the editor while a newer keystroke is pending). */
+  parsedSource: string;
   /** True while the preview is still showing the previous parse (a newer keystroke is pending). */
   isStale: boolean;
 }
@@ -23,21 +26,20 @@ export function useResumeDocument(): ResumeDocument {
   const deferredSource = useDeferredValue(source);
   const deferredPreference = useDeferredValue(preference);
   const result = useMemo(() => parseResume(deferredSource, deferredPreference), [deferredSource, deferredPreference]);
-  return { result, isStale: deferredSource !== source || deferredPreference !== preference };
+  return { result, parsedSource: deferredSource, isStale: deferredSource !== source || deferredPreference !== preference };
 }
 
-const subscribeToHydration = (onChange: () => void) => usePortfolioStore.persist.onFinishHydration(onChange);
-const hasHydrated = () => usePortfolioStore.persist.hasHydrated();
-const serverHydrated = () => false;
-
 /**
- * Restores the persisted workspace after hydration. The server (and the client's hydration pass) render the
- * un-hydrated snapshot; the store then rehydrates from localStorage and subscribers re-render once.
+ * Boots the workspace after the first client render and reports when it is ready. The server and the
+ * client's hydration pass both render the loading state, so markup always matches. Boot falls back to
+ * in-memory documents rather than failing; anything unexpected is rethrown here to reach the error boundary.
  */
-export function useStoreHydration(): boolean {
-  const hydrated = useSyncExternalStore(subscribeToHydration, hasHydrated, serverHydrated);
+export function useWorkspaceReady(): boolean {
+  const ready = usePortfolioStore((state) => state.status === "ready");
+  const [failure, setFailure] = useState<{ error: unknown } | null>(null);
   useEffect(() => {
-    if (!usePortfolioStore.persist.hasHydrated()) void usePortfolioStore.persist.rehydrate();
+    bootWorkspace().catch((error: unknown) => setFailure({ error }));
   }, []);
-  return hydrated;
+  if (failure) throw failure.error;
+  return ready;
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getSample } from "../lib/samples";
 import { findDateRange, formatRange, parseDateToken, totalMonths } from "./dates";
 import { parseResume, toJsonResume } from "./index";
-import { relaxedJsonParse } from "./json";
+import { relaxedJsonParse, repairJson } from "./json";
 
 const NOW = new Date(2026, 8, 1);
 
@@ -247,5 +247,38 @@ describe("JSON Resume export", () => {
     expect(exported.work[0]).toMatchObject({ name: "Stratus Analytics", startDate: "2021-01", endDate: undefined });
     expect(exported.education[1]).toMatchObject({ institution: "Anna University", studyType: "B.Tech", endDate: "2016", score: "8.9/10" });
     expect(parseResume(JSON.stringify(exported)).resume.experience).toHaveLength(3);
+  });
+});
+
+describe("regressions", () => {
+  it("repairs large invalid JSON in linear time", () => {
+    const work = Array.from({ length: 3200 }, (_, index) => ({
+      name: `Company ${index}`,
+      position: "Senior Engineer",
+      highlights: ["Shipped a thing with React", "Cut latency by 40% using Redis"],
+    }));
+    // A trailing comma forces the repair path, as happens on most keystrokes while editing JSON.
+    const broken = JSON.stringify({ basics: { name: "Jane Doe" }, work }, null, 2).replace(/\n\}$/, ",\n}");
+    const started = performance.now();
+    const repaired = repairJson(broken);
+    const elapsed = performance.now() - started;
+    expect(JSON.parse(repaired).work).toHaveLength(3200);
+    // ~0.8 MB: the previous quadratic pass took several seconds here, the linear one a few milliseconds.
+    expect(elapsed).toBeLessThan(750);
+  });
+
+  it("keeps single-date roles from turning into 'Present' after a JSON Resume round trip", () => {
+    const { resume } = parseResume("# Jane Doe\n\n## Experience\n\n### Engineer, Acme Corp\n2019\n\n- Shipped the thing\n- Fixed the other thing\n");
+    const exported = toJsonResume(resume, NOW);
+    expect(exported.work[0]).toMatchObject({ startDate: "2019", endDate: "2019" });
+    const period = parseResume(JSON.stringify(exported)).resume.experience[0]?.period ?? null;
+    expect(period?.end?.isPresent).toBe(false);
+    expect(formatRange(period)).toBe("2019");
+  });
+
+  it("merges auto-grouped skills into an explicit category with the same name", () => {
+    const { resume } = parseResume("# Jane Doe\n\n## Skills\n\nLanguages: TypeScript, Go\n\nReact, Vue, Node.js, PostgreSQL, Docker, Kubernetes, Python\n");
+    expect(resume.skills.filter((group) => group.category === "Languages")).toHaveLength(1);
+    expect(resume.skills.find((group) => group.category === "Languages")?.items).toEqual(["TypeScript", "Go", "Python"]);
   });
 });

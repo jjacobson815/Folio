@@ -51,7 +51,11 @@ export interface JsonResumeDocument {
 }
 
 function dates(period: DateRange | null): { startDate?: string; endDate?: string } {
-  return { startDate: toIsoDate(period?.start ?? null), endDate: toIsoDate(period?.end ?? null) };
+  const startDate = toIsoDate(period?.start ?? null);
+  // JSON Resume reads a missing endDate as "current", so a single-date period ("2019") repeats its start
+  // instead of coming back as "2019 – Present" on re-import. Ongoing periods keep endDate empty.
+  const endDate = period?.end ? toIsoDate(period.end) : startDate;
+  return { startDate, endDate };
 }
 
 const orUndefined = (value: string | null | undefined) => (value ? value : undefined);

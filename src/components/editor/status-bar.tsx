@@ -67,6 +67,29 @@ function UndoBanner() {
   );
 }
 
+/** Warns when edits aren't reaching browser storage: memory-only mode, or a failed save. */
+function StorageNotice() {
+  const storage = usePortfolioStore((state) => state.storage);
+  const [dismissed, setDismissed] = useState<string | null>(null);
+  const message =
+    storage.mode === "memory"
+      ? `Changes aren't being saved because ${storage.problem ?? "browser storage is unavailable"}. They'll be lost when this tab closes, so use Export → Download source to keep a copy.`
+      : storage.problem
+        ? `Couldn't save your latest changes because ${storage.problem}. Folio retries on your next edit.`
+        : null;
+
+  if (!message || dismissed === message) return null;
+  return (
+    <div role="alert" className="flex min-h-10 items-start gap-2 border-b bg-warning/10 px-3 py-2 text-xs sm:px-4">
+      <TriangleAlert aria-hidden="true" className="mt-px size-3.5 shrink-0 text-warning" />
+      <span className="min-w-0 flex-1 leading-relaxed">{message}</span>
+      <button type="button" onClick={() => setDismissed(message)} aria-label="Dismiss" className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground">
+        <X aria-hidden="true" className="size-3.5" />
+      </button>
+    </div>
+  );
+}
+
 function ImportErrorBanner({ state }: { state: ImportState }) {
   const [dismissedAt, setDismissedAt] = useState(0);
   useEffect(() => {
@@ -98,6 +121,7 @@ export function StatusBar({ result, importState }: { result: ParseResult; import
 
   return (
     <footer className="shrink-0 border-t bg-background/60 print:hidden">
+      <StorageNotice />
       <UndoBanner />
       <ImportErrorBanner state={importState} />
       <button

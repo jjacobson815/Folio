@@ -36,9 +36,8 @@ const keyOf = (key: string) => key.toLowerCase().replace(/[^a-z0-9]/g, "");
 const FENCE_RE = /^\s*```(?:json5?|jsonc)?\s*\n([\s\S]*?)\n?```\s*$/i;
 
 /** True when the last emitted token ends a value, so a following value / key needs a separating comma. */
-function endsValue(output: string): boolean {
-  const trimmed = output.trimEnd();
-  return /["}\]\d]$/.test(trimmed) || /(?:true|false|null)$/.test(trimmed);
+function endsValue(token: string): boolean {
+  return /["}\]\d]$/.test(token) || /(?:true|false|null)$/.test(token);
 }
 
 /**
@@ -48,6 +47,13 @@ function endsValue(output: string): boolean {
  */
 export function repairJson(input: string): string {
   let output = "";
+  // Last non-whitespace chunk written. Inspecting it instead of `output.trimEnd()` keeps the pass linear:
+  // trimming the growing output copies it on every token, which froze the editor on large invalid JSON.
+  let last = "";
+  const write = (chunk: string) => {
+    output += chunk;
+    if (chunk.trim()) last = chunk.trimEnd();
+  };
   let quote: '"' | "'" | null = null;
   let index = 0;
   while (index < input.length) {
@@ -56,28 +62,28 @@ export function repairJson(input: string): string {
 
     if (quote) {
       if (char === "\\") {
-        output += char + next;
+        write(char + next);
         index += 2;
         continue;
       }
       if (char === quote) {
-        output += '"';
+        write('"');
         quote = null;
       } else if (quote === "'" && char === '"') {
-        output += '\\"';
+        write('\\"');
       } else if (char === "\n") {
-        output += "\\n";
+        write("\\n");
       } else {
-        output += char;
+        write(char);
       }
       index++;
       continue;
     }
 
     if (char === '"' || char === "'") {
-      if (endsValue(output)) output += ",";
+      if (endsValue(last)) write(",");
       quote = char;
-      output += '"';
+      write('"');
       index++;
       continue;
     }
@@ -90,7 +96,7 @@ export function repairJson(input: string): string {
       index = end === -1 ? input.length : end + 2;
       continue;
     }
-    if ((char === "{" || char === "[") && endsValue(output)) output += ",";
+    if ((char === "{" || char === "[") && endsValue(last)) write(",");
     if (char === ",") {
       let lookahead = index + 1;
       while (lookahead < input.length && /\s/.test(input[lookahead] ?? "")) lookahead++;
@@ -106,16 +112,16 @@ export function repairJson(input: string): string {
       const word = input.slice(index, end);
       let colon = end;
       while (colon < input.length && /[ \t]/.test(input[colon] ?? "")) colon++;
-      const previous = output.trimEnd().at(-1);
-      if (input[colon] === ":" && (previous === "{" || previous === "," || endsValue(output))) {
-        output += `${endsValue(output) ? "," : ""}"${word}"`;
+      const previous = last.at(-1);
+      if (input[colon] === ":" && (previous === "{" || previous === "," || endsValue(last))) {
+        write(`${endsValue(last) ? "," : ""}"${word}"`);
       } else {
-        output += ({ True: "true", False: "false", None: "null", undefined: "null", NaN: "null" } as Record<string, string>)[word] ?? word;
+        write(({ True: "true", False: "false", None: "null", undefined: "null", NaN: "null" } as Record<string, string>)[word] ?? word);
       }
       index = end;
       continue;
     }
-    output += char;
+    write(char);
     index++;
   }
   return output;

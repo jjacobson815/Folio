@@ -1,4 +1,4 @@
-/** Server-rendered shell shown until the persisted workspace is restored from localStorage. */
+/** Server-rendered shell shown until the persisted workspace is restored from browser storage. */
 export function WorkspaceSkeleton() {
   return (
     <div aria-busy="true" aria-label="Loading workspace" className="flex h-dvh flex-col">

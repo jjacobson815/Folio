@@ -1,13 +1,22 @@
 "use client";
 
-import { Check, ClipboardCopy, Download, FileDown, Printer } from "lucide-react";
+import { Check, ClipboardCopy, Download, FileDown, FileText, Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { vanityDomain } from "@/lib/utils";
-import { toJsonResume, type ParseResult } from "@/parser";
+import { downloadText } from "@/lib/download";
+import { slugify } from "@/lib/utils";
+import { toJsonResume, type ParseResult, type SourceFormat } from "@/parser";
+import { documentLabel } from "@/storage/documents";
+import { usePortfolioStore } from "@/store/portfolio-store";
 
 type Feedback = "copied" | "downloaded" | "failed" | null;
+
+const SOURCE_FILES: Record<SourceFormat, { extension: string; type: string }> = {
+  json: { extension: "json", type: "application/json" },
+  markdown: { extension: "md", type: "text/markdown" },
+  text: { extension: "txt", type: "text/plain" },
+};
 
 function serialize(result: ParseResult): string {
   return `${JSON.stringify(toJsonResume(result.resume), null, 2)}\n`;
@@ -31,14 +40,17 @@ export function ExportMenu({ result }: { result: ParseResult }) {
     }
   };
 
-  const download = () => {
-    const blob = new Blob([serialize(result)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${vanityDomain(result.resume.basics.name).replace(/\.dev$/, "")}-resume.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+  const downloadJsonResume = () => {
+    downloadText(`${slugify(result.resume.basics.name) || "your-name"}-resume.json`, serialize(result), "application/json");
+    setFeedback("downloaded");
+  };
+
+  /** The raw text is the canonical copy (the JSON Resume export is lossy), so this is the real backup. */
+  const downloadSource = () => {
+    const { source, documents, activeDocumentId } = usePortfolioStore.getState();
+    const active = documents.find((document) => document.id === activeDocumentId);
+    const file = SOURCE_FILES[result.detected.format];
+    downloadText(`${slugify(active ? documentLabel(active) : result.resume.basics.name) || "resume"}.${file.extension}`, source, file.type);
     setFeedback("downloaded");
   };
 
@@ -64,9 +76,15 @@ export function ExportMenu({ result }: { result: ParseResult }) {
           <ClipboardCopy aria-hidden="true" />
           Copy JSON Resume
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={download}>
+        <DropdownMenuItem onSelect={downloadJsonResume}>
           <Download aria-hidden="true" />
           Download resume.json
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>Backup</DropdownMenuLabel>
+        <DropdownMenuItem onSelect={downloadSource}>
+          <FileText aria-hidden="true" />
+          Download source (.{SOURCE_FILES[result.detected.format].extension})
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

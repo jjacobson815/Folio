@@ -10,6 +10,7 @@ import { SAMPLES, type SampleId } from "@/lib/samples";
 import type { FormatPreference, ParseResult, SourceFormat } from "@/parser";
 import { ACCEPTED_FILE_TYPES } from "@/store/import-action";
 import { usePortfolioStore } from "@/store/portfolio-store";
+import { DocumentMenu } from "./document-menu";
 
 export const FORMAT_LABELS: Record<SourceFormat, string> = { json: "JSON", markdown: "Markdown", text: "Plain text" };
 
@@ -35,16 +36,17 @@ export function EditorToolbar({ result, onImport, isImporting }: { result: Parse
   return (
     <div className="shrink-0 border-b bg-background/60 print:hidden">
       <div className="flex h-12 items-center gap-2 px-3 sm:px-4">
-        <h2 className="text-sm font-semibold">Source</h2>
+        <h2 className="sr-only">Résumé source</h2>
+        <DocumentMenu />
         {detected ? (
           <Tooltip content={`Auto-detected with ${Math.round(detected.confidence * 100)}% confidence`}>
-            <span className="inline-flex h-5 items-center rounded-full bg-brand/10 px-2 text-[0.6875rem] font-medium text-brand">
+            <span className="inline-flex h-5 shrink-0 items-center rounded-full bg-brand/10 px-2 text-[0.6875rem] font-medium text-brand">
               {FORMAT_LABELS[detected.format]}
             </span>
           </Tooltip>
         ) : null}
 
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex shrink-0 items-center gap-1">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="gap-1">

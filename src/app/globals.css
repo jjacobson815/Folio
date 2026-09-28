@@ -1,0 +1,293 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------------------------
+ * Theme variants: `minimal:`, `brutalist:` and `glass:` apply when an ancestor carries the matching
+ * [data-theme]. Components write e.g. `brutalist:shadow-pf glass:backdrop-blur-xl` next to base styles.
+ * -------------------------------------------------------------------------------------------*/
+@custom-variant minimal (&:where([data-theme="minimal"], [data-theme="minimal"] *));
+@custom-variant brutalist (&:where([data-theme="brutalist"], [data-theme="brutalist"] *));
+@custom-variant glass (&:where([data-theme="glass"], [data-theme="glass"] *));
+
+/* ------------------------------------------------------------------ App chrome (shadcn-style) */
+:root {
+  color-scheme: light dark;
+  --radius: 0.625rem;
+  --background: oklch(0.985 0.002 286);
+  --foreground: oklch(0.16 0.006 286);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0.006 286);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0.006 286);
+  --primary: oklch(0.21 0.006 286);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.955 0.003 286);
+  --secondary-foreground: oklch(0.21 0.006 286);
+  --muted: oklch(0.955 0.003 286);
+  --muted-foreground: oklch(0.5 0.016 286);
+  --accent: oklch(0.945 0.004 286);
+  --accent-foreground: oklch(0.21 0.006 286);
+  --border: oklch(0.91 0.004 286);
+  --input: oklch(0.91 0.004 286);
+  --ring: oklch(0.62 0.18 285);
+  --brand: oklch(0.56 0.21 285);
+  --brand-foreground: oklch(0.985 0 0);
+  --success: oklch(0.6 0.15 155);
+  --warning: oklch(0.68 0.16 65);
+  --destructive: oklch(0.58 0.22 27);
+  --canvas: oklch(0.945 0.004 286);
+  --canvas-dot: oklch(0.86 0.006 286);
+  --editor: oklch(0.995 0.001 286);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.155 0.006 286);
+    --foreground: oklch(0.97 0.002 286);
+    --card: oklch(0.19 0.006 286);
+    --card-foreground: oklch(0.97 0.002 286);
+    --popover: oklch(0.2 0.006 286);
+    --popover-foreground: oklch(0.97 0.002 286);
+    --primary: oklch(0.94 0.004 286);
+    --primary-foreground: oklch(0.2 0.006 286);
+    --secondary: oklch(0.25 0.006 286);
+    --secondary-foreground: oklch(0.97 0.002 286);
+    --muted: oklch(0.24 0.006 286);
+    --muted-foreground: oklch(0.7 0.015 286);
+    --accent: oklch(0.26 0.007 286);
+    --accent-foreground: oklch(0.97 0.002 286);
+    --border: oklch(1 0 0 / 0.09);
+    --input: oklch(1 0 0 / 0.12);
+    --ring: oklch(0.7 0.16 285);
+    --brand: oklch(0.7 0.17 285);
+    --brand-foreground: oklch(0.16 0.02 285);
+    --success: oklch(0.74 0.15 155);
+    --warning: oklch(0.8 0.15 75);
+    --destructive: oklch(0.7 0.19 22);
+    --canvas: oklch(0.12 0.005 286);
+    --canvas-dot: oklch(0.24 0.006 286);
+    --editor: oklch(0.17 0.006 286);
+  }
+}
+
+/* ------------------------------------------------------------------ Portfolio design systems */
+@layer base {
+  [data-theme="minimal"] {
+    color-scheme: light;
+    --pf-bg: oklch(0.992 0 0);
+    --pf-fg: oklch(0.14 0 0);
+    --pf-muted: oklch(0.47 0 0);
+    --pf-subtle: oklch(0.96 0 0);
+    --pf-border: oklch(0.89 0 0);
+    --pf-card: oklch(1 0 0);
+    --pf-accent: oklch(0.14 0 0);
+    --pf-accent-fg: oklch(0.99 0 0);
+    --pf-accent-2: oklch(0.14 0 0);
+    --pf-accent-3: oklch(0.14 0 0);
+    --pf-radius: 0.375rem;
+    --pf-border-width: 1px;
+    --pf-shadow: none;
+    --pf-shadow-hover: none;
+    --pf-backdrop: none;
+    --pf-font-display: var(--font-instrument-serif), ui-serif, Georgia, serif;
+    --pf-font-body: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    --pf-font-label: var(--font-geist-mono), ui-monospace, monospace;
+  }
+
+  [data-theme="brutalist"] {
+    color-scheme: light;
+    --pf-bg: #f2efe6;
+    --pf-fg: #0b0b0b;
+    --pf-muted: #3b3b3b;
+    --pf-subtle: #e7e2d4;
+    --pf-border: #0b0b0b;
+    --pf-card: #ffffff;
+    --pf-accent: #c6f432;
+    --pf-accent-fg: #0b0b0b;
+    --pf-accent-2: #ff5a36;
+    --pf-accent-3: #7b88ff;
+    --pf-radius: 0px;
+    --pf-border-width: 3px;
+    --pf-shadow: 6px 6px 0 0 #0b0b0b;
+    --pf-shadow-hover: 10px 10px 0 0 #0b0b0b;
+    --pf-backdrop: none;
+    --pf-font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+    --pf-font-body: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+    --pf-font-label: var(--font-geist-mono), ui-monospace, monospace;
+  }
+
+  [data-theme="glass"] {
+    color-scheme: dark;
+    --pf-bg: #07070d;
+    --pf-fg: #f4f4f7;
+    --pf-muted: rgb(226 226 236 / 0.64);
+    --pf-subtle: rgb(255 255 255 / 0.05);
+    --pf-border: rgb(255 255 255 / 0.1);
+    --pf-card: rgb(255 255 255 / 0.045);
+    --pf-accent: #a78bfa;
+    --pf-accent-fg: #0b0718;
+    --pf-accent-2: #22d3ee;
+    --pf-accent-3: #f472b6;
+    --pf-radius: 1.25rem;
+    --pf-border-width: 1px;
+    --pf-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.06), 0 24px 64px -28px rgb(0 0 0 / 0.75);
+    --pf-shadow-hover: inset 0 1px 0 0 rgb(255 255 255 / 0.12), 0 32px 80px -28px rgb(139 92 246 / 0.45);
+    --pf-backdrop: blur(18px) saturate(150%);
+    --pf-font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    --pf-font-body: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    --pf-font-label: var(--font-geist-mono), ui-monospace, monospace;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-destructive: var(--destructive);
+  --color-canvas: var(--canvas);
+  --color-canvas-dot: var(--canvas-dot);
+  --color-editor: var(--editor);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-pf-bg: var(--pf-bg);
+  --color-pf-fg: var(--pf-fg);
+  --color-pf-muted: var(--pf-muted);
+  --color-pf-subtle: var(--pf-subtle);
+  --color-pf-border: var(--pf-border);
+  --color-pf-card: var(--pf-card);
+  --color-pf-accent: var(--pf-accent);
+  --color-pf-accent-fg: var(--pf-accent-fg);
+  --color-pf-accent-2: var(--pf-accent-2);
+  --color-pf-accent-3: var(--pf-accent-3);
+  --radius-pf: var(--pf-radius);
+  --shadow-pf: var(--pf-shadow);
+  --shadow-pf-hover: var(--pf-shadow-hover);
+  --font-pf-display: var(--pf-font-display);
+  --font-pf-body: var(--pf-font-body);
+  --font-pf-label: var(--pf-font-label);
+}
+
+@theme {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-marquee: marquee 42s linear infinite;
+  --animate-float: float 14s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(3%, -4%, 0) scale(1.06); }
+  }
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 color-mix(in oklab, currentColor 55%, transparent); }
+    80%, 100% { box-shadow: 0 0 0 6px transparent; }
+  }
+}
+
+/* ------------------------------------------------------------------ Semantic portfolio utilities */
+@utility pf-surface {
+  background-color: var(--pf-card);
+  border: var(--pf-border-width) solid var(--pf-border);
+  border-radius: var(--pf-radius);
+  box-shadow: var(--pf-shadow);
+  -webkit-backdrop-filter: var(--pf-backdrop);
+  backdrop-filter: var(--pf-backdrop);
+}
+
+@utility pf-border {
+  border: var(--pf-border-width) solid var(--pf-border);
+}
+
+@utility pf-border-t {
+  border-top: var(--pf-border-width) solid var(--pf-border);
+}
+
+@utility pf-border-b {
+  border-bottom: var(--pf-border-width) solid var(--pf-border);
+}
+
+@utility pf-label {
+  font-family: var(--pf-font-label);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, currentColor 22%, transparent) transparent;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    overflow: hidden;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--brand) 28%, transparent);
+  }
+}
+
+/* ------------------------------------------------------------------ Theme switch cross-fade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 380ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------ Print / Save as PDF */
+@media print {
+  @page {
+    margin: 0;
+  }
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

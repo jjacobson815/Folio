@@ -1,5 +1,7 @@
 # Folio: résumé → portfolio, live
 
+[![CI](https://github.com/jjacobson815/Folio/actions/workflows/ci.yml/badge.svg)](https://github.com/jjacobson815/Folio/actions/workflows/ci.yml)
+
 Paste a résumé as Markdown, JSON (JSON Resume or any custom layout) or a messy plain-text export. A client-side parser turns it into a strongly typed schema and renders a portfolio that updates as you type, in three design systems.
 
 Built with Next.js 16 (App Router), React 19, Tailwind CSS v4, Zustand 5, Radix UI and strict TypeScript.

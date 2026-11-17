@@ -85,7 +85,7 @@ export function EditorToolbar({ result, onImport, isImporting }: { result: Parse
               event.target.value = "";
             }}
           />
-          <Tooltip content="Import .md, .txt or .json (or drag & drop)">
+          <Tooltip content="Import .md, .txt, .json, .pdf or .docx (or drag & drop)">
             <Button variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isImporting} aria-label="Import file">
               {isImporting ? <LoaderCircle aria-hidden="true" className="animate-spin" /> : <Upload aria-hidden="true" />}
               <span className="hidden sm:inline">Import</span>

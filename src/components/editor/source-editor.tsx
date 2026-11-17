@@ -103,7 +103,7 @@ export function SourceEditor({ onImport }: { onImport: (file: File) => void }) {
         autoCapitalize="off"
         autoComplete="off"
         autoCorrect="off"
-        placeholder={"Paste your résumé here.\n\nMarkdown, JSON Resume and plain-text exports all work — or drop a .md, .txt or .json file."}
+        placeholder={"Paste your résumé here.\n\nMarkdown, JSON Resume and plain-text exports all work — or drop a .md, .txt, .json, .pdf or .docx file."}
         className="absolute inset-0 size-full resize-none bg-transparent px-4 py-4 font-mono text-base leading-6 text-foreground outline-none scrollbar-thin placeholder:text-muted-foreground/70 selection:bg-brand/25 sm:px-5 sm:text-[13px]"
       />
       <div
@@ -115,7 +115,7 @@ export function SourceEditor({ onImport }: { onImport: (file: File) => void }) {
       >
         <div className="flex flex-col items-center gap-2 text-sm font-medium text-brand">
           <FileUp aria-hidden="true" className="size-6" />
-          Drop to import .md, .txt or .json
+          Drop to import .md, .txt, .json, .pdf or .docx
         </div>
       </div>
     </div>
